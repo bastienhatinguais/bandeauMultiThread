@@ -1,4 +1,5 @@
 package bandeau;
+
 import java.util.List;
 import java.util.LinkedList;
 
@@ -15,8 +16,10 @@ class ScenarioElement {
         repeats = r;
     }
 }
+
 /**
- * Un scenario mémorise une liste d'effets, et le nombre de repetitions pour chaque effet
+ * Un scenario mémorise une liste d'effets, et le nombre de repetitions pour
+ * chaque effet
  * Un scenario sait se jouer sur un bandeau.
  */
 public class Scenario {
@@ -26,7 +29,7 @@ public class Scenario {
     /**
      * Ajouter un effect au scenario.
      *
-     * @param e l'effet à ajouter
+     * @param e       l'effet à ajouter
      * @param repeats le nombre de répétitions pour cet effet
      */
     public void addEffect(Effect e, int repeats) {
@@ -39,10 +42,17 @@ public class Scenario {
      * @param b le bandeau ou s'afficher.
      */
     public void playOn(Bandeau b) {
-        for (ScenarioElement element : myElements) {
-            for (int repeats = 0; repeats < element.repeats; repeats++) {
-                element.effect.playOn(b);
+        Thread thread = new Thread() {
+            public void run() {
+                synchronized (b) {
+                    for (ScenarioElement scenarioElement : myElements) {
+                        for (int i = 0; i < scenarioElement.repeats; i++) {
+                            scenarioElement.effect.playOn(b);
+                        }
+                    }
+                }
             }
-        }
+        };
+        thread.start();
     }
 }
